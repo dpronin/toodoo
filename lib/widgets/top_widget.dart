@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:toodoo/models/todo_model.dart';
+import 'package:toodoo/models/store_model.dart';
 
 class TopWidget extends StatelessWidget {
   const TopWidget(this.todos);
 
-  final List<Todo> todos;
+  final List<Store> todos;
 
   @override
   Widget build(BuildContext context) {

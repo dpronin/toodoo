@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/todo_model.dart';
+import '../models/store_model.dart';
 
 class TodoWidget extends StatelessWidget {
-  const TodoWidget(this.todo);
+  const TodoWidget(this.store);
 
-  final Todo todo;
+  final Store store;
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +15,6 @@ class TodoWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(15.0),
           color: Colors.amber.shade100,
         ),
-        child: ListTile(title: Text(todo.title)));
+        child: ListTile(title: Text(store.title)));
   }
 }

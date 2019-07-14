@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:toodoo/models/todo_model.dart';
+import 'package:toodoo/models/store_model.dart';
 import 'package:toodoo/widgets/todo_widget.dart';
 import 'package:toodoo/widgets/top_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,54 +14,93 @@ class _MainPageState extends State<MainPage> {
   CollectionReference collection = Firestore.instance.collection('users');
 
   void _addTodoItem() {
-    DocumentReference newDoc = collection.document();
-    newDoc.setData({"photo": "here"});
+    DocumentReference Doc = collection.document();
+    Doc.setData(
+        (Store(Doc.documentID)
+              ..title = 'title: ${DateTime.now()}'
+              ..priority = Priority.low)
+            .toSnapshot(),
+        merge: true);
   }
 
   Future _removeTodoItem(DocumentSnapshot document) async {
-      await collection.document(document.documentID).delete();
+    await collection.document(document.documentID).delete();
   }
-  
+
   ListView _transformTodo(AsyncSnapshot<QuerySnapshot> snapshot) {
     return ListView(
         children: snapshot.data.documents
-            .map((x) =>
-            GestureDetector(
-                child: TodoWidget(Todo(x.documentID)..title = x.data.toString()),
-                onTap: () => _removeTodoItem(x),
-              ))                
+            .map((x) => GestureDetector(
+                  child: TodoWidget(Store.fromSnapshot(x)),
+                  onTap: () => _removeTodoItem(x),
+                ))
             .toList());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SafeArea(
-            child: Column(
-          children: <Widget>[
-            TopWidget([]),
-            Flexible(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: collection.snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return Center(child: CircularProgressIndicator());
-                    default:
-                      return _transformTodo(snapshot);
-                  }
-                },
+      body: CustomScrollView(
+        slivers: <Widget>[
+          ///First sliver is the App Bar
+          SliverAppBar(
+            ///Properties of app bar
+            backgroundColor: Colors.white,
+            floating: false,
+            pinned: true,
+            expandedHeight: 200.0,
+
+            ///Properties of the App Bar when it is expanded
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text(
+                "SliverGrid Widget",
+                style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold),
+              ),
+              background: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: Colors.black26,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ],
-        )),
+          ),
+          StreamBuilder<QuerySnapshot>(
+            stream: collection.snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              return SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return TodoWidget(Store.fromSnapshot(snapshot.data.documents[index]));
+                  },
+                  childCount: snapshot.hasData ? snapshot.data.documents.length : 0
+                ),
+              );
+            },
+          )
+        ],
       ),
-      floatingActionButton: new FloatingActionButton(
-          onPressed: _addTodoItem,
-          tooltip: 'Add task',
-          child: new Icon(Icons.add)),
     );
   }
+
+  Widget listItem(Color color, String title) => Container(
+    height: 100.0,
+    color: color,
+    child: Center(
+      child: Text(
+        "$title",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Colors.white,
+            fontSize: 10.0,
+            fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
 }
