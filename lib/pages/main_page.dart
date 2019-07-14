@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:toodoo/models/todo_model.dart';
 import 'package:toodoo/widgets/todo_widget.dart';
+import 'package:toodoo/widgets/top_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -9,51 +11,26 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  List<String> _todoItems = [];
+  CollectionReference collection = Firestore.instance.collection('users');
 
   void _addTodoItem() {
-    // Putting our code inside "setState" tells the app that our state has changed, and
-    // it will automatically re-render the list
-    setState(() {
-      int index = _todoItems.length;
-      _todoItems.add('Item ' + index.toString());
-    });
+    DocumentReference newDoc = collection.document();
+    newDoc.setData({"photo": "here"});
   }
 
-  void _removeTodoItem(int index) {
-    setState(() {
-      _todoItems.removeAt(index);
-    });
+  Future _removeTodoItem(DocumentSnapshot document) async {
+      await collection.document(document.documentID).delete();
   }
-
-  Container get _topSummary => Container(
-        margin: EdgeInsets.all(10.0),
-        padding: EdgeInsets.all(10.0),
-        height: 200,
-        alignment: Alignment.topCenter,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
-          color: Colors.green.shade100,
-        ),
-        child: Text("Summary", style: TextStyle(fontSize: 30)),
-      );
-
-  Widget get _todoList => ListView.builder(
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return _topSummary;
-          }
-          if (index < _todoItems.length) {
-            return GestureDetector(
-                child: _buildTodoItem(index),
-                onTap: () => _removeTodoItem(index),
-              );
-          }
-        },
-      );
-
-  Widget _buildTodoItem(int index) {
-    return TodoWidget(Todo(_todoItems[index]));
+  
+  ListView _transformTodo(AsyncSnapshot<QuerySnapshot> snapshot) {
+    return ListView(
+        children: snapshot.data.documents
+            .map((x) =>
+            GestureDetector(
+                child: TodoWidget(Todo(x.documentID)..title = x.data.toString()),
+                onTap: () => _removeTodoItem(x),
+              ))                
+            .toList());
   }
 
   @override
@@ -61,10 +38,25 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: Center(
         child: SafeArea(
-            child: Container(
-              child: _todoList,
-              )
+            child: Column(
+          children: <Widget>[
+            TopWidget([]),
+            Flexible(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: collection.snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return Center(child: CircularProgressIndicator());
+                    default:
+                      return _transformTodo(snapshot);
+                  }
+                },
+              ),
             ),
+          ],
+        )),
       ),
       floatingActionButton: new FloatingActionButton(
           onPressed: _addTodoItem,

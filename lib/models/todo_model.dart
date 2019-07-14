@@ -1,5 +1,13 @@
 class Todo {
-  final String title;
+  final String id;
+  String title;
+  Priority priority;
 
-  Todo(this.title);
+  Todo(this.id);
 }
+
+  enum Priority {
+    low,
+    medium,
+    high
+  }
