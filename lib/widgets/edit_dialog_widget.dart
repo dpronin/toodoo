@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:toodoo/models/store_model.dart';
 
 class FunkyOverlay extends StatefulWidget {
+  FunkyOverlay(this.todo);
+
+  final Store todo;
+
   @override
-  State<StatefulWidget> createState() => FunkyOverlayState();
+  State<StatefulWidget> createState() => FunkyOverlayState(todo);
 }
 
 class FunkyOverlayState extends State<FunkyOverlay>
@@ -12,6 +16,12 @@ class FunkyOverlayState extends State<FunkyOverlay>
   Animation<double> scaleAnimation;
 
   final myController = TextEditingController();
+
+  FunkyOverlayState(this.todo) {
+    myController.text = todo.title;
+  }
+  
+  final Store todo;
 
   @override
   void dispose() {

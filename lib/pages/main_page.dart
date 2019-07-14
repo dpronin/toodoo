@@ -8,6 +8,7 @@ import 'package:toodoo/widgets/edit_dialog_widget.dart';
 import 'package:toodoo/widgets/todo_widget.dart';
 import 'package:toodoo/widgets/top_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -36,7 +37,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future _updateTodo(DocumentSnapshot document, dynamic x) {
-    collection.document(document.documentID).updateData({'priority' : x['priority'].index, 'title': x['title'] = x['title']});
+    collection.document(document.documentID).updateData(
+        {'priority': x['priority'].index, 'title': x['title'] = x['title']});
   }
 
   @override
@@ -52,14 +54,34 @@ class _MainPageState extends State<MainPage> {
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 return SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
+                    final todo = Store.fromSnapshot(
+                              snapshot.data.documents[index]);
                     return GestureDetector(
-                        child: TodoWidget(
-                            Store.fromSnapshot(snapshot.data.documents[index])),
+                        child: Slidable(
+                          actionPane: SlidableDrawerActionPane(),
+                          actionExtentRatio: 0.25,
+                          child: TodoWidget(todo),
+                          actions: <Widget>[
+                            IconSlideAction(
+                              caption: 'Share',
+                              color: Colors.indigo,
+                              icon: Icons.share,
+                            ),
+                          ],
+                          secondaryActions: <Widget>[
+                            IconSlideAction(
+                              caption: 'Delete',
+                              color: Colors.red,
+                              icon: Icons.delete,
+                              onTap: () => _removeTodoItem(snapshot.data.documents[index]),
+                            ),
+                          ],
+                        ),
                         onTap: () => showDialog(
                               context: context,
-                              builder: (_) => FunkyOverlay(),
-                            ).then((x) => _updateTodo(snapshot.data.documents[index], x))
-                        );
+                              builder: (_) => FunkyOverlay(todo),
+                            ).then((x) => _updateTodo(
+                                snapshot.data.documents[index], x)));
                   },
                       childCount: snapshot.hasData
                           ? snapshot.data.documents.length
