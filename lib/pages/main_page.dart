@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:toodoo/models/todo_model.dart';
+import 'package:toodoo/widgets/todo_widget.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -15,6 +17,12 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       int index = _todoItems.length;
       _todoItems.add('Item ' + index.toString());
+    });
+  }
+
+  void _removeTodoItem(int index) {
+    setState(() {
+      _todoItems.removeAt(index);
     });
   }
 
@@ -36,13 +44,16 @@ class _MainPageState extends State<MainPage> {
             return _topSummary;
           }
           if (index < _todoItems.length) {
-            return _buildTodoItem(index);
+            return GestureDetector(
+                child: _buildTodoItem(index),
+                onTap: () => _removeTodoItem(index),
+              );
           }
         },
       );
 
   Widget _buildTodoItem(int index) {
-    return new ListTile(title: new Text(_todoItems[index]));
+    return TodoWidget(Todo(_todoItems[index]));
   }
 
   @override
@@ -50,7 +61,9 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: Center(
         child: SafeArea(
-            child: Container(child: _todoList,)
+            child: Container(
+              child: _todoList,
+              )
             ),
       ),
       floatingActionButton: new FloatingActionButton(
