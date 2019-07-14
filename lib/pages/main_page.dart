@@ -27,80 +27,68 @@ class _MainPageState extends State<MainPage> {
     await collection.document(document.documentID).delete();
   }
 
-  ListView _transformTodo(AsyncSnapshot<QuerySnapshot> snapshot) {
-    return ListView(
-        children: snapshot.data.documents
-            .map((x) => GestureDetector(
-                  child: TodoWidget(Store.fromSnapshot(x)),
-                  onTap: () => _removeTodoItem(x),
-                ))
-            .toList());
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          ///First sliver is the App Bar
-          SliverAppBar(
-            ///Properties of app bar
-            backgroundColor: Colors.white,
-            floating: false,
-            pinned: true,
-            expandedHeight: 200.0,
+        body: CustomScrollView(
+          slivers: <Widget>[
+            ///First sliver is the App Bar
+            SliverAppBar(
+              ///Properties of app bar
+              backgroundColor: Colors.white,
+              floating: false,
+              pinned: true,
+              expandedHeight: 200.0,
 
-            ///Properties of the App Bar when it is expanded
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Text(
-                "SliverGrid Widget",
-                style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold),
-              ),
-              background: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(
-                      color: Colors.black26,
-                      width: 1.0,
+              ///Properties of the App Bar when it is expanded
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: true,
+                title: Text(
+                  "SliverGrid Widget",
+                  style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold),
+                ),
+                background: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        color: Colors.black26,
+                        width: 1.0,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          StreamBuilder<QuerySnapshot>(
-            stream: collection.snapshots(),
-            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              return SliverList(
+            StreamBuilder<QuerySnapshot>(
+              stream: collection.snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                return SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
-                    return TodoWidget(Store.fromSnapshot(snapshot.data.documents[index]));
+                    return GestureDetector(
+                      child: TodoWidget(
+                          Store.fromSnapshot(snapshot.data.documents[index])),
+                      onTap: () =>
+                          _removeTodoItem(snapshot.data.documents[index]),
+                    );
                   },
-                  childCount: snapshot.hasData ? snapshot.data.documents.length : 0
-                ),
-              );
-            },
-          )
-        ],
-      ),
-    );
+                      childCount: snapshot.hasData
+                          ? snapshot.data.documents.length
+                          : 0),
+                );
+              },
+            )
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _addTodoItem(),
+          child: Icon(
+            Icons.add,
+            color: Colors.yellow,
+          ),
+          foregroundColor: Colors.pink,
+        ));
   }
-
-  Widget listItem(Color color, String title) => Container(
-    height: 100.0,
-    color: color,
-    child: Center(
-      child: Text(
-        "$title",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 10.0,
-            fontWeight: FontWeight.bold),
-      ),
-    ),
-  );
 }
