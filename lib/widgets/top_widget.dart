@@ -2,22 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:toodoo/models/store_model.dart';
 
 class TopWidget extends StatelessWidget {
-  const TopWidget(this.todos);
-
-  final List<Store> todos;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10.0),
-      padding: EdgeInsets.all(10.0),
-      height: 200,
-      alignment: Alignment.topCenter,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15.0),
-        color: Colors.green.shade100,
-      ),
-      child: Text('${todos.length}', style: TextStyle(fontSize: 30)),
-    );
+    return SliverAppBar(
+              backgroundColor: Colors.white,
+              floating: false,
+              pinned: true,
+              expandedHeight: 200.0,
+              flexibleSpace: Container(
+                  color: Colors.amber,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Icon(Icons.star, size: 50),
+                  )),
+            );
   }
 }

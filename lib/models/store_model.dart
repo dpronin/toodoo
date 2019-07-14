@@ -13,15 +13,14 @@ class Store {
       'documentID': documentID,
       'username': username,
       'title': title,
-      'priority': 'e'
+      'priority': priority.index
     };
   }
 
   Store.fromSnapshot(DocumentSnapshot snapshot)
       : documentID = snapshot.documentID,
-        title = snapshot.data['title'] ?? '';
-        // priority = Priority.values.firstWhere(
-        //     (e) => e.toString() == snapshot.data['priority'] ?? Priority.low.toString());
+        title = snapshot.data['title'] ?? '',
+        priority = Priority.values[snapshot.data['priority'] ?? 0];
 }
 
 enum Priority { low, medium, high }

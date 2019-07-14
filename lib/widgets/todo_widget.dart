@@ -6,6 +6,19 @@ class TodoWidget extends StatelessWidget {
 
   final Store store;
 
+  Color color(Priority priority) {
+    switch (priority) {
+      case Priority.low:
+        return Colors.greenAccent.shade100;
+        case Priority.medium:
+        return Colors.amber.shade100;
+        case Priority.high:
+        return Colors.redAccent.shade100;
+      default:
+        return Colors.green.shade100;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -13,7 +26,7 @@ class TodoWidget extends StatelessWidget {
         padding: EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
-          color: Colors.amber.shade100,
+          color: color(store.priority),
         ),
         child: ListTile(title: Text(store.title)));
   }
