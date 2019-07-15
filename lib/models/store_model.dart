@@ -4,6 +4,7 @@ class Store {
   final String documentID;
   String username = '';
   String title = '';
+
   Priority priority = Priority.low;
 
   Store(this.documentID);

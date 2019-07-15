@@ -20,7 +20,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
   FunkyOverlayState(this.todo) {
     myController.text = todo.title;
   }
-  
+
   final Store todo;
 
   @override
@@ -48,60 +48,68 @@ class FunkyOverlayState extends State<FunkyOverlay>
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Material(
-        color: Colors.transparent,
-        child: ScaleTransition(
-          scale: scaleAnimation,
-          child: Container(
-              height: 200,
-              width: 300,
-              decoration: ShapeDecoration(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0))),
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: TextField(
-                      controller: myController,
-                      maxLines: 2,
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Enter a search term'),
-                    ),
-                  ),
-                  Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: IconButton(
-                                icon: Icon(Icons.subdirectory_arrow_right),
-                                onPressed: () =>
-                                    Navigator.pop(context, {'priority' : Priority.low, 'title': myController.text})),
-                          ),
-                          Expanded(
-                            child: IconButton(
-                                icon: Icon(Icons.system_update_alt),
-                                onPressed: () =>
-                                    Navigator.pop(context, {'priority' : Priority.medium, 'title': myController.text})),
-                          ),
-                          Expanded(
-                            child: IconButton(
-                                icon: Icon(Icons.surround_sound),
-                                onPressed: () =>
-                                    Navigator.pop(context, {'priority' : Priority.high, 'title': myController.text})),
-                          ),
-                        ],
-                      ))
-                ],
-                // ),
-              )),
-          // ),
-        ),
-      ),
-    );
+    var mediaQuery = MediaQuery.of(context);
+    return new AnimatedContainer(
+        padding: mediaQuery.padding,
+        duration: const Duration(milliseconds: 300),
+        child: Center(
+          child: Material(
+            color: Colors.transparent,
+            child: ScaleTransition(
+              scale: scaleAnimation,
+              child: Container(
+                  height: 200,
+                  width: 300,
+                  decoration: ShapeDecoration(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0))),
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: TextField(
+                          controller: myController,
+                          maxLines: 2,
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Enter a search term'),
+                        ),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: IconButton(
+                                    icon: Icon(Icons.subdirectory_arrow_right),
+                                    onPressed: () => Navigator.pop(context, {
+                                          'priority': Priority.low,
+                                          'title': myController.text
+                                        })),
+                              ),
+                              Expanded(
+                                child: IconButton(
+                                    icon: Icon(Icons.system_update_alt),
+                                    onPressed: () => Navigator.pop(context, {
+                                          'priority': Priority.medium,
+                                          'title': myController.text
+                                        })),
+                              ),
+                              Expanded(
+                                child: IconButton(
+                                    icon: Icon(Icons.surround_sound),
+                                    onPressed: () => Navigator.pop(context, {
+                                          'priority': Priority.high,
+                                          'title': myController.text
+                                        })),
+                              ),
+                            ],
+                          ))
+                    ],
+                  )),
+            ),
+          ),
+        ));
   }
 }

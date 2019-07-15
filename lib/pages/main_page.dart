@@ -16,18 +16,14 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  CollectionReference collection = Firestore.instance.collection('users');
+  CollectionReference collection = Firestore.instance.collection('todos');
 
   void _addTodoItem() {
     DocumentReference doc = collection.document();
-    final title = 'title: ${DateTime.now()}';
-    final ran = Random().nextInt(3);
-    final priority =
-        ran == 1 ? Priority.low : ran == 0 ? Priority.medium : Priority.high;
     doc.setData(
         (Store(doc.documentID)
-              ..title = title
-              ..priority = priority)
+              ..title = ''
+              ..priority = Priority.low)
             .toSnapshot(),
         merge: true);
   }
