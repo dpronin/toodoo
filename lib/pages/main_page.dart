@@ -32,12 +32,6 @@ class _MainPageState extends State<MainPage> {
         merge: true);
   }
 
-  _ipdateDocuments(List<DocumentSnapshot> documents) {
-    setState(() {
-      _documents = documents;
-    });
-  }
-
   Future _removeTodoItem(DocumentSnapshot document) async {
     await collection.document(document.documentID).delete();
   }
@@ -45,6 +39,34 @@ class _MainPageState extends State<MainPage> {
   Future _updateTodo(DocumentSnapshot document, dynamic x) {
     return collection.document(document.documentID).updateData(
         {'priority': x['priority'].index, 'title': x['title'] = x['title']});
+  }
+
+  List<CircularStackEntry> _chartData(AsyncSnapshot<QuerySnapshot> snapshot) {
+    if (snapshot.data != null) {
+      final priorities = groupBy(snapshot.data.documents, (x) => x['priority']);
+      if (!priorities.containsKey(0)) priorities[0] = [];
+      if (!priorities.containsKey(1)) priorities[1] = [];
+      if (!priorities.containsKey(2)) priorities[2] = [];
+      final totalLength =
+          priorities.values.fold(0, (x, y) => 1.0 * x + y.length);
+      final low = priorities[0].length * 100.0 / totalLength;
+      final medium = priorities[1].length * 100.0 / totalLength;
+      final high = priorities[2].length * 100.0 / totalLength;
+      return <CircularStackEntry>[
+        new CircularStackEntry(
+          <CircularSegmentEntry>[
+            new CircularSegmentEntry(low, Colors.greenAccent.shade200,
+                rankKey: 'Q1'),
+            new CircularSegmentEntry(medium, Colors.amberAccent.shade200,
+                rankKey: 'Q2'),
+            new CircularSegmentEntry(high, Colors.redAccent.shade200,
+                rankKey: 'Q3'),
+          ],
+          rankKey: 'Quarterly Profits',
+        ),
+      ];
+    }
+    return [];
   }
 
   @override
@@ -55,31 +77,12 @@ class _MainPageState extends State<MainPage> {
           child: StreamBuilder<QuerySnapshot>(
               stream: stream,
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                var priorities = groupBy(snapshot.data.documents, (x) => x['priority']);
-                if (!priorities.containsKey(0)) priorities[0] = [];
-                if (!priorities.containsKey(1)) priorities[1] = [];
-                if (!priorities.containsKey(2)) priorities[2] = [];
-                final totalLength = priorities.values.fold(0, (x, y) => 1.0 * x + y.length);
-                final low = priorities[0].length * 100.0 / totalLength;
-                final medium = priorities[1].length * 100.0 / totalLength;
-                final high = priorities[2].length * 100.0  / totalLength;
-                List<CircularStackEntry> nextData = <CircularStackEntry>[
-                  new CircularStackEntry(
-                    <CircularSegmentEntry>[
-                      new CircularSegmentEntry(low, Colors.greenAccent.shade200,
-                          rankKey: 'Q1'),
-                      new CircularSegmentEntry(medium, Colors.amberAccent.shade200,
-                          rankKey: 'Q2'),
-                      new CircularSegmentEntry(high, Colors.redAccent.shade200,
-                          rankKey: 'Q3'),
-                    ],
-                    rankKey: 'Quarterly Profits',
-                  ),
-                ];
-                _chartKey.currentState.updateData(nextData);
+                if (_chartKey.currentState != null) {
+                  _chartKey.currentState.updateData(_chartData(snapshot));
+                }
                 return CustomScrollView(
                   slivers: <Widget>[
-                    TopWidget(_chartKey, snapshot),
+                    TopWidget(_chartKey),
                     SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final todo =

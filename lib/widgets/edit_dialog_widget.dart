@@ -52,18 +52,16 @@ class FunkyOverlayState extends State<FunkyOverlay>
     return new AnimatedContainer(
         padding: mediaQuery.padding,
         duration: const Duration(milliseconds: 300),
-        child: Center(
+        child: Container(
+            margin: EdgeInsets.only(bottom: 120),
+            child: Center(
           child: Material(
-            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(15.0),
             child: ScaleTransition(
               scale: scaleAnimation,
               child: Container(
                   height: 200,
                   width: 300,
-                  decoration: ShapeDecoration(
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0))),
                   child: Column(
                     children: <Widget>[
                       Padding(
@@ -110,6 +108,6 @@ class FunkyOverlayState extends State<FunkyOverlay>
                   )),
             ),
           ),
-        ));
+        )));
   }
 }
