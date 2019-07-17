@@ -14,7 +14,7 @@ class TopWidget extends StatelessWidget {
     return SliverAppBar(
         floating: false,
         pinned: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey.shade100,
         expandedHeight: 260.0,
         flexibleSpace: Padding(
             padding: EdgeInsets.all(20),

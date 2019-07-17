@@ -75,6 +75,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     final stream = collection.orderBy('priority', descending: true).snapshots();
     return Scaffold(
+        backgroundColor: Colors.grey.shade100,
         body: SafeArea(
           child: StreamBuilder<QuerySnapshot>(
               stream: stream,
