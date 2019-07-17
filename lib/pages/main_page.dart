@@ -24,20 +24,22 @@ class _MainPageState extends State<MainPage> {
 
   void _addTodoItem() {
     DocumentReference doc = collection.document();
-    doc.setData(
-        (Store(doc.documentID)
-              ..title = ''
-              ..priority = Priority.low)
-            .toSnapshot(),
-        merge: true);
+    final todo = Store(doc.documentID)
+      ..title = ''
+      ..priority = Priority.low;
+    doc.setData((todo.toSnapshot()), merge: true);
+    showDialog(
+      context: context,
+      builder: (_) => FunkyOverlay(todo),
+    ).then((x) => _updateTodo(doc, x));
   }
 
   Future _removeTodoItem(DocumentSnapshot document) async {
     await collection.document(document.documentID).delete();
   }
 
-  Future _updateTodo(DocumentSnapshot document, dynamic x) {
-    return collection.document(document.documentID).updateData(
+  Future _updateTodo(DocumentReference doc, dynamic x) {
+    return doc.updateData(
         {'priority': x['priority'].index, 'title': x['title'] = x['title']});
   }
 
@@ -113,7 +115,9 @@ class _MainPageState extends State<MainPage> {
                                   context: context,
                                   builder: (_) => FunkyOverlay(todo),
                                 ).then((x) => _updateTodo(
-                                    snapshot.data.documents[index], x)));
+                                    collection.document(snapshot
+                                        .data.documents[index].documentID),
+                                    x)));
                       },
                           childCount: snapshot.hasData
                               ? snapshot.data.documents.length
