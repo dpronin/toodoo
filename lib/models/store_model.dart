@@ -9,7 +9,7 @@ class Store {
 
   Store(this.documentID);
 
-  Map<String, dynamic> toSnapshot() {
+  toJson() {
     return {
       'documentID': documentID,
       'username': username,
@@ -17,7 +17,6 @@ class Store {
       'priority': priority.index
     };
   }
-
   Store.fromSnapshot(DocumentSnapshot snapshot)
       : documentID = snapshot.documentID,
         title = snapshot.data['title'] ?? '',

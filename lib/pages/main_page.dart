@@ -27,7 +27,7 @@ class _MainPageState extends State<MainPage> {
     final todo = Store(doc.documentID)
       ..title = ''
       ..priority = Priority.low;
-    doc.setData((todo.toSnapshot()), merge: true);
+    doc.setData(todo.toJson(), merge: true);
     showDialog(
       context: context,
       builder: (_) => FunkyOverlay(todo),

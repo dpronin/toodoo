@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 
@@ -23,7 +20,6 @@ class TopWidget extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('d3 13 3 131 '),
                 AnimatedCircularChart(
                   key: _chartKey,
                   holeRadius: 10,
@@ -48,7 +44,6 @@ class TopWidget extends StatelessWidget {
                   ],
                   chartType: CircularChartType.Radial,
                 ),
-                  Text('d3 13 3 131 '),
               ]),
             )))
         );
